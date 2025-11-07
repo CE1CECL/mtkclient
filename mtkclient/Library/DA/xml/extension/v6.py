@@ -501,7 +501,7 @@ class XmlFlashExt(metaclass=LogBase):
         else:
             max_sector_size = sectors
         filesize = os.path.getsize(filename)
-        sectors = min(filesize // 256, max_sector_size)
+        sectors = filesize // 256
         if self.custom_rpmb_init():
             if sectors > 0:
                 with open(filename, "rb") as rf:

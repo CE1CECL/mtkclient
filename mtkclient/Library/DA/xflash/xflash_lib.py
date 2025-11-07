@@ -165,7 +165,7 @@ class DAXFlash(metaclass=LogBase):
                 length = len(param)
                 pos = 0
                 while length > 0:
-                    dsize = min(length, 0x200)
+                    dsize = length
                     if not self.usbwrite(param[pos:pos + dsize]):
                         break
                     pos += dsize
@@ -346,47 +346,47 @@ class DAXFlash(metaclass=LogBase):
             elif parttype == "boot1":
                 parttype = EmmcPartitionType.MTK_DA_EMMC_PART_BOOT1
                 if self.daconfig.flashtype == "emmc":
-                    length = min(length, self.emmc.boot1_size)
+                    length = self.emmc.boot1_size
             elif parttype == "boot2":
                 parttype = EmmcPartitionType.MTK_DA_EMMC_PART_BOOT2
                 if self.daconfig.flashtype == "emmc":
-                    length = min(length, self.emmc.boot2_size)
+                    length = self.emmc.boot2_size
             elif parttype == "gp1":
                 parttype = EmmcPartitionType.MTK_DA_EMMC_PART_GP1
                 if self.daconfig.flashtype == "emmc":
-                    length = min(length, self.emmc.gp1_size)
+                    length = self.emmc.gp1_size
             elif parttype == "gp2":
                 parttype = EmmcPartitionType.MTK_DA_EMMC_PART_GP2
                 if self.daconfig.flashtype == "emmc":
-                    length = min(length, self.emmc.gp2_size)
+                    length = self.emmc.gp2_size
             elif parttype == "gp3":
                 parttype = EmmcPartitionType.MTK_DA_EMMC_PART_GP3
                 if self.daconfig.flashtype == "emmc":
-                    length = min(length, self.emmc.gp3_size)
+                    length = self.emmc.gp3_size
             elif parttype == "gp4":
                 parttype = EmmcPartitionType.MTK_DA_EMMC_PART_GP4
                 if self.daconfig.flashtype == "emmc":
-                    length = min(length, self.emmc.gp4_size)
+                    length = self.emmc.gp4_size
             elif parttype == "rpmb":
                 parttype = EmmcPartitionType.MTK_DA_EMMC_PART_RPMB
                 if self.daconfig.flashtype == "emmc":
-                    length = min(length, self.emmc.rpmb_size)
+                    length = self.emmc.rpmb_size
             else:
                 self.error('Unknown parttype. Known parttypes are "boot1","boot2","gp1","gp2","gp3","gp4","rpmb"')
                 return []
         elif storage == DaStorage.MTK_DA_STORAGE_UFS:
             if parttype is None or parttype == "lu3" or parttype == "user":  # USER
                 parttype = UFSPartitionType.UFS_LU3
-                length = min(length, self.ufs.lu0_size)
+                length = self.ufs.lu0_size
             elif parttype in ["lu1", "boot1"]:  # BOOT1
                 parttype = UFSPartitionType.UFS_LU1
-                length = min(length, self.ufs.lu1_size)
+                length = self.ufs.lu1_size
             elif parttype in ["lu2", "boot2"]:  # BOOT2
                 parttype = UFSPartitionType.UFS_LU2
-                length = min(length, self.ufs.lu2_size)
+                length = self.ufs.lu2_size
             elif parttype in ["lu4", "rpmb"]:  # RPMB
                 parttype = UFSPartitionType.UFS_LU4
-                length = min(length, self.ufs.lu2_size)
+                length = self.ufs.lu2_size
             else:
                 self.error('Unknown parttype. Known parttypes are "lu1","lu2","lu3","lu4"')
                 return []
@@ -394,11 +394,11 @@ class DAXFlash(metaclass=LogBase):
                          DaStorage.MTK_DA_STORAGE_NAND_SLC, DaStorage.MTK_DA_STORAGE_NAND_TLC,
                          DaStorage.MTK_DA_STORAGE_NAND_SPI, DaStorage.MTK_DA_STORAGE_NAND_AMLC]:
             parttype = EmmcPartitionType.MTK_DA_EMMC_PART_USER
-            length = min(length, self.nand.total_size)
+            length = self.nand.total_size
         elif storage in [DaStorage.MTK_DA_STORAGE_NOR, DaStorage.MTK_DA_STORAGE_NOR_PARALLEL,
                          DaStorage.MTK_DA_STORAGE_NOR_SERIAL]:
             parttype = EmmcPartitionType.MTK_DA_EMMC_PART_USER
-            length = min(length, self.nor.available_size)
+            length = self.nor.available_size
         return [storage, parttype, length]
 
     def formatflash(self, addr, length, storage=None,
@@ -942,7 +942,7 @@ class DAXFlash(metaclass=LogBase):
         if filename != "":
             if os.path.exists(filename):
                 fsize = os.stat(filename).st_size
-                length = min(fsize, length)
+                length = fsize
                 if length % 512 != 0:
                     fill = 512 - (length % 512)
                     length += fill
@@ -971,7 +971,7 @@ class DAXFlash(metaclass=LogBase):
                         else:
                             rpos = 0
                         self.mtk.daloader.progress.show_progress("Write", rpos, length, display)
-                    dsize = min(write_packet_size, bytestowrite)
+                    dsize = write_packet_size
                     if fh:
                         data = bytearray(fh.read(dsize))
                         if len(data) < dsize:

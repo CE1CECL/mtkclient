@@ -860,7 +860,7 @@ class DALegacy(metaclass=LogBase):
         if filename != '':
             fh = open(filename, "rb")
             fsize = os.stat(filename).st_size
-            length = min(fsize, length)
+            length = fsize
             if length % 512 != 0:
                 fill = 512 - (length % 512)
                 length += fill
@@ -878,7 +878,7 @@ class DALegacy(metaclass=LogBase):
         offset = 0
         while offset < length:
             self.usbwrite(self.Rsp.ACK)
-            count = min(0x100000, length - offset)
+            count = length - offset
             if fh:
                 data = bytearray(fh.read(count))
                 if len(data) < count:
@@ -930,7 +930,7 @@ class DALegacy(metaclass=LogBase):
                 checksum = 0
                 bytestowrite = length
                 while bytestowrite > 0:
-                    size = min(bytestowrite, packetsize)
+                    size = bytestowrite
                     for i in range(0, size, 0x400):
                         data = bytearray(rf.read(size))
                         pos = length - bytestowrite
@@ -1001,37 +1001,37 @@ class DALegacy(metaclass=LogBase):
     def get_parttype(self, length, parttype):
         if self.daconfig.flashtype == "emmc":
             if parttype is None or parttype == "user" or parttype == "":
-                length = min(length, self.emmc.m_emmc_ua_size)
+                length = self.emmc.m_emmc_ua_size
                 parttype = EmmcPartitionType.MTK_DA_EMMC_PART_USER
             elif parttype == "boot1":
-                length = min(length, self.emmc.m_emmc_boot1_size)
+                length = self.emmc.m_emmc_boot1_size
                 parttype = EmmcPartitionType.MTK_DA_EMMC_PART_BOOT1
             elif parttype == "boot2":
-                length = min(length, self.emmc.m_emmc_boot2_size)
+                length = self.emmc.m_emmc_boot2_size
                 parttype = EmmcPartitionType.MTK_DA_EMMC_PART_BOOT2
             elif parttype == "gp1":
-                length = min(length, self.emmc.m_emmc_gp_size[0])
+                length = self.emmc.m_emmc_gp_size[0]
                 parttype = EmmcPartitionType.MTK_DA_EMMC_PART_GP1
             elif parttype == "gp2":
-                length = min(length, self.emmc.m_emmc_gp_size[1])
+                length = self.emmc.m_emmc_gp_size[1]
                 parttype = EmmcPartitionType.MTK_DA_EMMC_PART_GP2
             elif parttype == "gp3":
-                length = min(length, self.emmc.m_emmc_gp_size[2])
+                length = self.emmc.m_emmc_gp_size[2]
                 parttype = EmmcPartitionType.MTK_DA_EMMC_PART_GP3
             elif parttype == "gp4":
-                length = min(length, self.emmc.m_emmc_gp_size[3])
+                length = self.emmc.m_emmc_gp_size[3]
                 parttype = EmmcPartitionType.MTK_DA_EMMC_PART_GP4
             elif parttype == "rpmb":
                 parttype = EmmcPartitionType.MTK_DA_EMMC_PART_RPMB
         elif self.daconfig.flashtype == "nand":
             parttype = EmmcPartitionType.MTK_DA_EMMC_PART_USER
-            length = min(length, self.nand.m_nand_flash_size)
+            length = self.nand.m_nand_flash_size
         elif self.daconfig.flashtype == "nor":
             parttype = EmmcPartitionType.MTK_DA_EMMC_PART_USER
-            length = min(length, self.nor.m_nor_flash_size)
+            length = self.nor.m_nor_flash_size
         else:
             parttype = EmmcPartitionType.MTK_DA_EMMC_PART_USER
-            length = min(length, self.sdc.m_sdmmc_ua_size)
+            length = self.sdc.m_sdmmc_ua_size
         return length, parttype
 
     def readflash(self, addr: int, length: int, filename: str, parttype=None, display=True) -> (bytes, bool):

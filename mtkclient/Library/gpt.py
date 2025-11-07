@@ -329,7 +329,7 @@ class GPT(metaclass=LogBase):
     def print_gptfile(self, gptfilename):
         try:
             with open(gptfilename, "rb") as rrf:
-                _sz = min(32 * 4096, os.stat(gptfilename).st_size)
+                _sz = os.stat(gptfilename).st_size
                 _data = rrf.read(_sz)
                 for sector_size in [512, 4096]:
                     res = self.parse(_data, sector_size)
@@ -379,7 +379,7 @@ if __name__ == "__main__":
             sys.exit(1)
         filesize = os.stat(args.image).st_size
         with open(args.image, "rb", buffering=1024 * 1024) as rf:
-            data = rf.read(min(32 * 4096, filesize))
+            data = rf.read(filesize)
             ssize = None
             for sectorsize in [512, 4096]:
                 result = gp.parse(data, sectorsize)
@@ -405,7 +405,7 @@ if __name__ == "__main__":
                     bytestoread = length
                     with open(filename, "wb", buffering=1024 * 1024) as wf:
                         while bytestoread > 0:
-                            size = min(bytestoread, 0x200000)
+                            size = bytestoread
                             data = rf.read(size)
                             wf.write(data)
                             bytestoread -= size

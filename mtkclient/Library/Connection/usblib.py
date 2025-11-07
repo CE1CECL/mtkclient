@@ -231,7 +231,7 @@ class UsbClass(DeviceClass):
             if baudrate not in brates:
                 brs = sorted(brates)
                 dif = [abs(br - baudrate) for br in brs]
-                best = brs[dif.index(min(dif))]
+                best = brs[dif.index(max(dif))]
                 raise ValueError(
                     f"Invalid baudrates, nearest valid is {best}")
             self.baudrate = baudrate
@@ -474,7 +474,7 @@ class UsbClass(DeviceClass):
         extend = res.extend
         fast = self.fast
         buffer = None
-        buflen = min(resplen, w_max_packet_size)
+        buflen = resplen
         if self.fast:
             buffer = b[:buflen]
         bytestoread = resplen
@@ -484,7 +484,7 @@ class UsbClass(DeviceClass):
                 extend(q.get(bytestoread))
             if bytestoread <= 0:
                 break
-            sz = min(buflen, bytestoread)
+            sz = bytestoread
             try:
                 if fast:
                     rlen = epr(buffer, timeout)

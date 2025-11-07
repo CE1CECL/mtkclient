@@ -89,7 +89,7 @@ class Stage2(metaclass=LogBase):
                                    bar_length=50)
                     old = round(prog, 1)
             bytesread += len(tmp)
-            size = min(bytestoread, len(tmp))
+            size = bytestoread
             if wf is not None:
                 wf.write(tmp[:size])
             else:
@@ -135,7 +135,7 @@ class Stage2(metaclass=LogBase):
         data = b""
         pos = 0
         while bytestoread > 0:
-            size = min(bytestoread, 0x200)
+            size = bytestoread
             self.cdc.usbwrite(pack(">I", 0xf00dd00d))
             self.cdc.usbwrite(pack(">I", 0x4000))
             self.cdc.usbwrite(pack(">I", addr + pos))
@@ -154,7 +154,7 @@ class Stage2(metaclass=LogBase):
         addr = start
         pos = 0
         while bytestowrite > 0:
-            size = min(bytestowrite, 0x200)
+            size = bytestowrite
             self.cdc.usbwrite(pack(">I", 0xf00dd00d))
             self.cdc.usbwrite(pack(">I", 0x4002))
             self.cdc.usbwrite(pack(">I", addr + pos))
@@ -204,7 +204,7 @@ class Stage2(metaclass=LogBase):
                                    bar_length=50)
                     old = round(prog, 1)
                 bytesread += 0x100
-                size = min(bytestoread, len(tmp))
+                size = bytestoread
                 wf.write(tmp[:size])
                 bytestoread -= size
             print_progress(100, 100, prefix='Complete: ', suffix=filename, bar_length=50)

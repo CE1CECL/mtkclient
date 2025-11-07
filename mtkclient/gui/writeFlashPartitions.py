@@ -79,14 +79,13 @@ class WriteFlashWindow(QObject):
         for partition in self.parent.writepartitionCheckboxes:
             checkbox, lineedit, button = self.parent.writepartitionCheckboxes[partition]['box']
             if checkbox.isChecked():
-                totalsize += min(self.parent.writepartitionCheckboxes[partition]['size'],
-                                 os.stat(lineedit.text()).st_size)
+                totalsize += os.stat(lineedit.text()).st_size
         self.parent.Status["totalsize"] = totalsize
 
         for partition in self.parent.writepartitionCheckboxes:
             checkbox, lineedit, button = self.parent.writepartitionCheckboxes[partition]['box']
             if checkbox.isChecked():
-                size = min(self.parent.writepartitionCheckboxes[partition]['size'], os.stat(lineedit.text()).st_size)
+                size = os.stat(lineedit.text()).st_size
                 self.parent.Status["allPartitions"][partition] = {"size": size,
                                                                   "done": False}
         for partition in self.parent.writepartitionCheckboxes:
@@ -96,7 +95,7 @@ class WriteFlashWindow(QObject):
                 variables.partitionname = partition
                 variables.filename = lineedit.text()
                 variables.parttype = "user"
-                size = min(self.parent.writepartitionCheckboxes[partition]['size'], os.stat(variables.filename).st_size)
+                size = os.stat(variables.filename).st_size
                 self.parent.Status["currentPartitionSize"] = size
                 self.parent.Status["currentPartition"] = partition
                 self.parent.Status["currentPartitionFile"] = variables.filename

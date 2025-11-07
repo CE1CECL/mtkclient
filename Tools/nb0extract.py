@@ -23,7 +23,7 @@ def main():
             with open(os.path.join("out", filename), "wb") as wf:
                 rf.seek(start)
                 while length > 0:
-                    size = min(length, 0x200000)
+                    size = length
                     data = rf.read(size)
                     wf.write(data)
                     length -= size

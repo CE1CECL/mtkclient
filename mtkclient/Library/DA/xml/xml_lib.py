@@ -235,7 +235,7 @@ class DAXML(metaclass=LogBase):
                     data = bytearray()
                     bytestoread = length
                     while bytestoread > 0:
-                        sz = min(usbepsz, bytestoread)
+                        sz = bytestoread
                         data.extend(self.usbread(sz,w_max_packet_size=sz))
                         bytestoread -= sz
                     if len(data) == length:
@@ -849,31 +849,31 @@ class DAXML(metaclass=LogBase):
             elif parttype == "boot1":
                 parttype = "EMMC-BOOT1"
                 if self.daconfig.flashtype == "emmc":
-                    length = min(length, self.emmc.boot1_size)
+                    length = self.emmc.boot1_size
             elif parttype == "boot2":
                 parttype = "EMMC-BOOT2"
                 if self.daconfig.flashtype == "emmc":
-                    length = min(length, self.emmc.boot2_size)
+                    length = self.emmc.boot2_size
             elif parttype == "gp1":
                 parttype = "EMMC-GP1"
                 if self.daconfig.flashtype == "emmc":
-                    length = min(length, self.emmc.gp1_size)
+                    length = self.emmc.gp1_size
             else:
                 self.error("Unknown parttype. Known parttypes are \"boot1\",\"boot2\",\"gp1\",\"gp2\",\"gp3\",\"gp4\",\"rpmb\"")
                 return []
         elif storage == DaStorage.MTK_DA_STORAGE_UFS:
             if parttype is None or parttype == "lu3" or parttype == "user":  # USER
                 parttype = "UFS-LUA2"
-                length = min(length, self.ufs.lu3_size)
+                length = self.ufs.lu3_size
             elif parttype in ["lu1", "boot1"]:  # BOOT1
                 parttype = "UFS-LUA0"
-                length = min(length, self.ufs.lu1_size)
+                length = self.ufs.lu1_size
             elif parttype in ["lu2", "boot2"]:  # BOOT2
                 parttype = "UFS-LUA1"
-                length = min(length, self.ufs.lu2_size)
+                length = self.ufs.lu2_size
             elif parttype in ["lu4", "rpmb"]:  # RPMB
                 parttype = "UFS-LUA3"
-                length = min(length, self.ufs.lu4_size)
+                length = self.ufs.lu4_size
             else:
                 self.error("Unknown parttype. Known parttypes are \"lu1\",\"lu2\",\"lu3\",\"lu4\"")
                 return []
@@ -881,11 +881,11 @@ class DAXML(metaclass=LogBase):
                          DaStorage.MTK_DA_STORAGE_NAND_SLC, DaStorage.MTK_DA_STORAGE_NAND_TLC,
                          DaStorage.MTK_DA_STORAGE_NAND_SPI, DaStorage.MTK_DA_STORAGE_NAND_AMLC]:
             parttype = "NAND-WHOLE"  # NAND-AREA0
-            length = min(length, self.nand.total_size)
+            length = self.nand.total_size
         elif storage in [DaStorage.MTK_DA_STORAGE_NOR, DaStorage.MTK_DA_STORAGE_NOR_PARALLEL,
                          DaStorage.MTK_DA_STORAGE_NOR_SERIAL]:
             parttype = "NOR-WHOLE"  # NOR-AREA0
-            length = min(length, self.nor.available_size)
+            length = self.nor.available_size
         return [storage, parttype, length]
 
     def getstorage(self, parttype, length):
@@ -942,7 +942,7 @@ class DAXML(metaclass=LogBase):
         if filename != "":
             if os.path.exists(filename):
                 fsize = os.stat(filename).st_size
-                length = min(fsize, length)
+                length = fsize
                 if length % 512 != 0:
                     fill = 512 - (length % 512)
                     length += fill

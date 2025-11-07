@@ -569,7 +569,7 @@ class DaHandler(metaclass=LogBase):
             error = False
             while sectors:
                 sectorsize = sectors * self.config.pagesize
-                wsize = min(sectorsize, 0x200000)
+                wsize = sectorsize
                 if self.mtk.daloader.writeflash(addr=sector * self.config.pagesize,
                                                 length=wsize,
                                                 filename="",
@@ -588,7 +588,7 @@ class DaHandler(metaclass=LogBase):
         else:
             pos = 0
             self.mtk.daloader.formatflash(addr=sector * self.config.pagesize,
-                                          length=min(sectors * self.config.pagesize, 0xF000000),
+                                          length=sectors * self.config.pagesize,
                                           partitionname=None,
                                           parttype=parttype,
                                           display=True)
@@ -602,8 +602,7 @@ class DaHandler(metaclass=LogBase):
                 res = self.mtk.daloader.detect_partition(partition, parttype)
                 if res[0]:
                     rpartition = res[1]
-                    rsectors = min(sectors * self.config.pagesize,
-                                   rpartition.sectors * self.config.pagesize)
+                    rsectors = rpartition.sectors * self.config.pagesize
                     if sectors > rsectors:
                         self.error(f"Partition {partition} only has {rsectors}, you were using {sectors}. " +
                                    "Aborting")
@@ -613,7 +612,7 @@ class DaHandler(metaclass=LogBase):
                     sector = rpartition.sector
                     while sectors:
                         sectorsize = sectors * self.mtk.daloader.daconfig.pagesize
-                        wsize = min(sectorsize, 0x200000)
+                        wsize = sectorsize
                         if self.mtk.daloader.writeflash(addr=sector * self.config.pagesize,
                                                         length=wsize,
                                                         filename="",
@@ -638,7 +637,7 @@ class DaHandler(metaclass=LogBase):
             pos = 0
             for partitionname in partitions:
                 self.mtk.daloader.formatflash(addr=pos,
-                                              length=min(sectors * self.config.pagesize, 0xF000000),
+                                              length=sectors * self.config.pagesize,
                                               partitionname=partitionname,
                                               parttype=parttype,
                                               display=True)
@@ -699,7 +698,7 @@ class DaHandler(metaclass=LogBase):
             wf = open(filename, "wb")
         retval = bytearray()
         while bytestoread > 0:
-            msize = min(bytestoread, pagesize)
+            msize = bytestoread
             try:
                 data = self.mtk.daloader.peek(addr=addr + pos, length=msize)
                 if wf is not None:

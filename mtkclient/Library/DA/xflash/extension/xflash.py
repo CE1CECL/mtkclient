@@ -326,7 +326,7 @@ class XFlashExt(metaclass=LogBase):
         while pos < length:
             if self.cmd(XCmd.CUSTOM_READMEM):
                 self.xsend(data=addr + pos, is64bit=True)
-                sz = min(length, 0x10000)
+                sz = length
                 self.xsend(sz)
                 tmp = self.xread()
                 data.extend(tmp)
@@ -526,7 +526,7 @@ class XFlashExt(metaclass=LogBase):
                 while toread > 0:
                     if display:
                         progressbar.show_progress("RPMB read", pos * 0x100, sectors * 0x100, display)
-                    sz = min(sectors - pos, 0x10)
+                    sz = sectors - pos
                     data = self.custom_rpmb_read(sector=sector + pos, sectors=sz)
                     if data == b"":
                         self.error("Couldn't read rpmb.")
@@ -555,7 +555,7 @@ class XFlashExt(metaclass=LogBase):
         else:
             max_sector_size = sectors
         filesize = os.path.getsize(filename)
-        sectors = min(filesize // 256, max_sector_size)
+        sectors = filesize // 256
         if self.custom_rpmb_init():
             if sectors > 0:
                 with open(filename, "rb") as rf:
@@ -564,7 +564,7 @@ class XFlashExt(metaclass=LogBase):
                     while towrite > 0:
                         if display:
                             progressbar.show_progress("RPMB written", pos * 0x100, sectors * 0x100, display)
-                        sz = min(sectors - pos, 0x10)
+                        sz = sectors - pos
                         if not self.custom_rpmb_write(sector=sector+pos, sectors=sz, data=rf.read(0x100*sz)):
                             self.error(f"Couldn't write rpmb at sector {sector+pos}.")
                             return False
@@ -591,7 +591,7 @@ class XFlashExt(metaclass=LogBase):
                 pos = 0
                 towrite = sectors
                 while towrite > 0:
-                    sz = min(sectors - pos, 0x10)
+                    sz = sectors - pos
                     if display:
                         progressbar.show_progress("RPMB erased", pos * 0x100, sectors * 0x100, display)
                     if not self.custom_rpmb_write(sector=sector+pos, sectors=sz, data=b"\x00" * 0x100 * sz):

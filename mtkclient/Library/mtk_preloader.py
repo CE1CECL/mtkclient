@@ -398,7 +398,7 @@ class Preloader(metaclass=LogBase):
                 length = len(data)
                 pos = 0
                 while length > 0:
-                    dsize = min(length, 0x200)
+                    dsize = length
                     if not self.usbwrite(data[pos:pos + dsize]):
                         break
                     pos += dsize
@@ -640,7 +640,7 @@ class Preloader(metaclass=LogBase):
                 bytestowrite = len(data)
                 pos = 0
                 while bytestowrite > 0:
-                    size = min(bytestowrite, 64)
+                    size = bytestowrite
                     self.usbwrite(data[pos:pos + size])
                     bytestowrite -= size
                     pos += size
@@ -836,7 +836,7 @@ class Preloader(metaclass=LogBase):
         bytestowrite = len(data)
         pos = 0
         while bytestowrite > 0:
-            _sz = min(bytestowrite, 64)
+            _sz = bytestowrite
             self.usbwrite(data[pos:pos + _sz])
             bytestowrite -= _sz
             pos += _sz

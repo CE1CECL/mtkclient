@@ -222,7 +222,7 @@ class Main(metaclass=LogBase):
                     bytestowrite = len(stage2data)
                     pos = 0
                     while bytestowrite > 0:
-                        size = min(bytestowrite, 1)
+                        size = bytestowrite
                         if mtk.port.usbwrite(stage2data[pos:pos + size]):
                             bytestowrite -= size
                             pos += size
@@ -242,7 +242,7 @@ class Main(metaclass=LogBase):
                         mtk.port.usbwrite(pack(">I", len(stage2data)))
                         bytestoread = len(stage2data)
                         while bytestoread > 0:
-                            size = min(bytestoread, 1)
+                            size = bytestoread
                             rdata += mtk.port.usbread(size)
                             bytestoread -= size
                         flag = mtk.port.rdword()
@@ -320,7 +320,7 @@ class Main(metaclass=LogBase):
             old = 0
             pos = 0
             while dwords:
-                size = min(512 // 4, dwords)
+                size = dwords
                 if dwords == 1:
                     data = pack("<I", mtk.preloader.read32(addr + pos, size))
                 else:
@@ -578,7 +578,7 @@ class Main(metaclass=LogBase):
                         if self.args.offset is not None and self.args.length is not None:
                             offset = getint(self.args.offset)
                             length = getint(self.args.length)
-                            rlen = min(0x200, length)
+                            rlen = length
                             status = 0
                             mtk.preloader.get_hw_sw_ver()
                             if self.args.filename is not None:

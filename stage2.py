@@ -171,7 +171,7 @@ class Stage2(metaclass=LogBase):
             if display:
                 pg.show_progress(prefix="Progress:", pos=sector, total=sectors)
             bytesread += len(tmp)
-            size = min(bytestoread, len(tmp))
+            size = bytestoread
             if wf is not None:
                 wf.write(tmp[:size])
             else:
@@ -259,7 +259,7 @@ class Stage2(metaclass=LogBase):
         if filename is not None:
             wf = open(filename, "wb")
         while bytestoread > 0:
-            size = min(bytestoread, 0x100)
+            size = bytestoread
             self.usbwrite(pack(">I", 0xf00dd00d))
             self.usbwrite(pack(">I", 0x4002))
             self.usbwrite(pack(">I", addr + pos))
@@ -289,7 +289,7 @@ class Stage2(metaclass=LogBase):
         addr = start
         pos = 0
         while bytestowrite > 0:
-            size = min(bytestowrite, 0x100)
+            size = bytestowrite
             self.usbwrite(pack(">I", 0xf00dd00d))
             self.usbwrite(pack(">I", 0x4000))
             self.usbwrite(pack(">I", addr + pos))
@@ -354,7 +354,7 @@ class Stage2(metaclass=LogBase):
                     return
                 pg.show_progress(prefix="Progress:", pos=sector, total=sectors)
                 bytesread += 0x100
-                size = min(bytestoread, len(tmp))
+                size = bytestoread
                 wf.write(tmp[:size])
                 bytestoread -= size
             while bytestoread > 0:
@@ -363,7 +363,7 @@ class Stage2(metaclass=LogBase):
                 self.usbwrite(pack(">H", sector + 1))
                 self.usbwrite(pack(">H", 1))
                 tmp = self.usbread(0x100)
-                size = min(bytestoread, len(tmp))
+                size = bytestoread
                 wf.write(tmp[:size])
                 bytestoread -= size
                 pg.show_progress(prefix="Progress:", pos=sector, total=sectors)
